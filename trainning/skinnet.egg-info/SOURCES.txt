@@ -1,0 +1,5 @@
+setup.py
+skinnet.egg-info/PKG-INFO
+skinnet.egg-info/SOURCES.txt
+skinnet.egg-info/dependency_links.txt
+skinnet.egg-info/top_level.txt
