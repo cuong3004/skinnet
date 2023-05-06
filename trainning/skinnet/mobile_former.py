@@ -13,9 +13,9 @@ import torch.nn.functional as F
 import math
 
 from timm.data import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD, IMAGENET_INCEPTION_MEAN, IMAGENET_INCEPTION_STD
-from .helpers import build_model_with_cfg, default_cfg_for_features
-from .registry import register_model
-from .dna_blocks import DnaBlock, DnaBlock3, _make_divisible, MergeClassifier, Local2Global
+from timm.models import build_model_with_cfg, register_model
+# from .registry import register_model
+from dna_blocks import DnaBlock, DnaBlock3, _make_divisible, MergeClassifier, Local2Global
 
 __all__ = ['MobileFormer']
   
