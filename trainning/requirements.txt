@@ -1,0 +1,5 @@
+pytorch-lightning
+lightly
+wandb
+gdown
+transformers
