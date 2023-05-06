@@ -112,7 +112,7 @@ class BYOL(pl.LightningModule):
         mobileformer.load_state_dict(state_dict)
         mobileformer.classifier.classifier[1] = IdentityLayer()
         self.backbone = mobileformer
-        self.projection_head = BYOLProjectionHead(1024, 512, 512)
+        self.projection_head = BYOLProjectionHead(1024, 512, 256)
         self.prediction_head = BYOLPredictionHead(256, 512, 256)
 
         self.backbone_momentum = copy.deepcopy(self.backbone)
@@ -124,6 +124,9 @@ class BYOL(pl.LightningModule):
         self.linear = nn.Linear(1024, 7)
 
         self.criterion = NegativeCosineSimilarity()
+
+        # out = mobileformer(torch.ones((2,3,64,64)))
+        # print(out.shape)
 
     def forward(self, x):
         y = self.backbone(x).flatten(start_dim=1)
@@ -396,5 +399,9 @@ lr_monitor = LearningRateMonitor(logging_interval='step')
 
 gpus = 1 if torch.cuda.is_available() else 0
 
-trainer = pl.Trainer(max_epochs=max_epochs, devices=1, precision="16-mixed", logger=wandb_logger, callbacks=[checkpoint_callback,
+trainer = pl.Trainer(max_epochs=max_epochs, devices=1, 
+                    precision="16-mixed", logger=wandb_logger, 
+                    default_root_dir="/content/drive/MyDrive/Data/log_skin_byol", callbacks=[checkpoint_callback,
                                                                                                              lr_monitor])
+
+trainer.fit(model, train_dataloaders=dataloader_is, val_dataloaders=dataloader_ham_valid)
