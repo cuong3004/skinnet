@@ -878,6 +878,8 @@ class DnaBlock(nn.Module):
                 attn_num_heads=attn_num_heads,
                 remove_proj_local=remove_proj_local,
             )
+            
+        print(hyper_token_id)
 
     def forward(self, x):
         features, tokens = x
