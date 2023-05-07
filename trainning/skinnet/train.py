@@ -141,7 +141,7 @@ class LitModel(pl.LightningModule):
         logits = self.model(x)
         loss = F.cross_entropy(logits, y)
 
-        acc = self.acc(logits, y, num_classes=2)
+        acc = self.acc(logits, y, task="multiclass", num_classes=7)
 
         self.log('train_loss', loss, on_step=False, on_epoch=True, logger=True)
         self.log('train_acc', acc, on_step=False, on_epoch=True, logger=True)
@@ -164,15 +164,15 @@ class LitModel(pl.LightningModule):
         all_preds = torch.cat(self.all_preds,dim=0)
         all_labels = torch.cat(self.all_labels,dim=0)
         # print(all_preds.shape)
-        acc = accuracy(all_preds, all_labels, task="multiclass")
+        acc = accuracy(all_preds, all_labels, task="multiclass", num_classes=7)
         pre = precision(all_preds, all_labels, task="multiclass", average=average, num_classes=7)
         rec = recall(all_preds, all_labels, task="multiclass", average=average, num_classes=7)
         f1 = f1_score(all_preds, all_labels, task="multiclass", average=average, num_classes=7)
         
         self.log('val_acc', acc)
-        self.log('val_pre', pre[1])
-        self.log('val_rec', rec[1])
-        self.log('val_f1', f1[1])
+        self.log('val_pre', pre)
+        self.log('val_rec', rec)
+        self.log('val_f1', f1)
         
         self.all_preds = []
         self.all_labels = []
@@ -192,15 +192,15 @@ class LitModel(pl.LightningModule):
         all_preds = torch.cat(self.all_preds,dim=0)
         all_labels = torch.cat(self.all_labels,dim=0)
         
-        acc = accuracy(all_preds, all_labels, task="multiclass")
+        acc = accuracy(all_preds, all_labels, task="multiclass", num_classes=7)
         pre = precision(all_preds, all_labels, task="multiclass", average=average, num_classes=7)
         rec = recall(all_preds, all_labels, task="multiclass", average=average, num_classes=7)
         f1 = f1_score(all_preds, all_labels, task="multiclass", average=average, num_classes=7)
         
         self.log('test_acc', acc)
-        self.log('test_pre', pre[1])
-        self.log('test_rec', rec[1])
-        self.log('test_f1', f1[1])
+        self.log('test_pre', pre)
+        self.log('test_rec', rec)
+        self.log('test_f1', f1)
         
         self.all_preds = []
         self.all_labels = []
@@ -234,7 +234,7 @@ wandb_logger = WandbLogger(project="byol_fine_tune_12", name="skin_vit_new_1", l
 
 # Initialize a trainer
 trainer = pl.Trainer(max_epochs=100,
-                     gpus=1, 
+                    #  gpus=1, 
                     #  step-
                     # limit_train_batches=0.3,
                      logger=wandb_logger,
