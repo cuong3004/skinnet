@@ -116,13 +116,13 @@ class IdentityLayer(nn.Module):
 
 
 from torchmetrics.functional import accuracy, precision, recall, f1_score
-average = "macro"
+average = 'macro'
 
 class LitModel(pl.LightningModule):
     def __init__(self):
         super().__init__()
         
-        model_cls = get_mobile_former()
+        model_cls = get_skinnet_v1()
         model_cls.classifier.classifier[1] = IdentityLayer()
         
         model_cls.classifier.classifier[1] = nn.Linear(1024, 7)
@@ -193,14 +193,20 @@ class LitModel(pl.LightningModule):
         all_labels = torch.cat(self.all_labels,dim=0)
         
         acc = accuracy(all_preds, all_labels, task="multiclass", num_classes=7)
-        pre = precision(all_preds, all_labels, task="multiclass", average=average, num_classes=7)
-        rec = recall(all_preds, all_labels, task="multiclass", average=average, num_classes=7)
-        f1 = f1_score(all_preds, all_labels, task="multiclass", average=average, num_classes=7)
+        pre = precision(all_preds, all_labels, task="multiclass", average=None, num_classes=7)
+        rec = recall(all_preds, all_labels, task="multiclass", average=None, num_classes=7)
+        f1 = f1_score(all_preds, all_labels, task="multiclass", average=None, num_classes=7)
         
         self.log('test_acc', acc)
-        self.log('test_pre', pre)
-        self.log('test_rec', rec)
-        self.log('test_f1', f1)
+        
+        for i in range(7):
+            name_label = label_dir_invert[i]
+            self.log(f'test_{name_label}_pre', pre[i])
+            self.log(f'test_{name_label}_rec', rec[i])
+        
+        # self.log('test_pre', pre)
+        # self.log('test_rec', rec)
+        # self.log('test_f1', f1)
         
         self.all_preds = []
         self.all_labels = []
@@ -229,7 +235,7 @@ checkpoint_callback = pl.callbacks.ModelCheckpoint(monitor="val_acc", mode='max'
 
 from pytorch_lightning.loggers import WandbLogger
 
-wandb_logger = WandbLogger(project="byol_fine_tune_12", name="skin_vit_new_1", log_model="all")
+wandb_logger = WandbLogger(project="byol_fine_tune_12_findel", name="skin_vit_new_1", log_model="all")
 
 
 # Initialize a trainer
